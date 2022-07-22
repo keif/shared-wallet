@@ -55,6 +55,10 @@ contract SharedWallet is Allowance {
         emit MoneyReceived(msg.sender, msg.value);
     }
 
+    function renounceOwnership() public view override onlyOwner {
+        revert("Can't renounceOwnership here"); //not possible with this smart contract
+    }
+
     function withdrawMoney(address payable _to, uint256 _amount)
         public
         ownerOrAllowed(_amount)
