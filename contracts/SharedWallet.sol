@@ -33,6 +33,9 @@ contract SharedWallet is Ownable {
             _amount <= address(this).balance,
             "Contract doesn't own enough money"
         );
+        if (!isOwner()) {
+            reduceAllowance(msg.sender, _amount);
+        }
         _to.transfer(_amount);
     }
 
