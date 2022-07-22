@@ -1,17 +1,17 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.15;
+pragma solidity ^0.8.15;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-contract SharedWallet is Ownable {
-    function isOwner() internal view returns (bool) {
-        return owner() == msg.sender;
+contract Allowance is Ownable {
+    function isOwner() public view virtual returns (bool) {
+        return msg.sender == owner();
     }
 
     mapping(address => uint256) public allowance;
 
-    function addAllowance(address _who, uint256 _amount) public onlyOwner {
+    function setAllowance(address _who, uint256 _amount) public onlyOwner {
         allowance[_who] = _amount;
     }
 
@@ -23,6 +23,15 @@ contract SharedWallet is Ownable {
         _;
     }
 
+    function reduceAllowance(address _who, uint256 _amount)
+        internal
+        ownerOrAllowed(_amount)
+    {
+        allowance[_who] -= _amount;
+    }
+}
+
+contract SharedWallet is Allowance {
     function receiveMoney() public payable {}
 
     function withdrawMoney(address payable _to, uint256 _amount)
