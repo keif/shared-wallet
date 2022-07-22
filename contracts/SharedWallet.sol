@@ -9,9 +9,16 @@ contract Allowance is Ownable {
         return msg.sender == owner();
     }
 
+    event AllowanceChanged(
+        address indexed _forWho,
+        address indexed _byWhom,
+        uint256 _oldAmount,
+        uint256 _newAmount
+    );
     mapping(address => uint256) public allowance;
 
     function setAllowance(address _who, uint256 _amount) public onlyOwner {
+        emit AllowanceChanged(_who, msg.sender, allowance[_who], _amount);
         allowance[_who] = _amount;
     }
 
@@ -27,6 +34,12 @@ contract Allowance is Ownable {
         internal
         ownerOrAllowed(_amount)
     {
+        emit AllowanceChanged(
+            _who,
+            msg.sender,
+            allowance[_who],
+            allowance[_who] - _amount
+        );
         allowance[_who] -= _amount;
     }
 }
