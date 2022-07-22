@@ -3,8 +3,11 @@
 pragma solidity ^0.8.15;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol";
 
 contract Allowance is Ownable {
+    using SafeMath for uint256;
+
     function isOwner() public view virtual returns (bool) {
         return msg.sender == owner();
     }
