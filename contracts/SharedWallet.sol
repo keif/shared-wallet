@@ -9,12 +9,30 @@ contract SharedWallet is Ownable {
         return owner() == msg.sender;
     }
 
+    mapping(address => uint256) public allowance;
+
+    function addAllowance(address _who, uint256 _amount) public onlyOwner {
+        allowance[_who] = _amount;
+    }
+
+    modifier ownerOrAllowed(uint256 _amount) {
+        require(
+            isOwner() || allowance[msg.sender] >= _amount,
+            "You are not allowed!"
+        );
+        _;
+    }
+
     function receiveMoney() public payable {}
 
     function withdrawMoney(address payable _to, uint256 _amount)
         public
-        onlyOwner
+        ownerOrAllowed(_amount)
     {
+        require(
+            _amount <= address(this).balance,
+            "Contract doesn't own enough money"
+        );
         _to.transfer(_amount);
     }
 
